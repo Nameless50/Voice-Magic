@@ -9,24 +9,37 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
     <script>
-        // A-Frame Custom Component for Spell Casting
+        // Extended A-Frame Custom Component for Shooting Spell
         AFRAME.registerComponent('cast-spell', {
             init: function() {
                 this.el.addEventListener('click', () => {
-                    // Example spell effect: Change background color
-                    const sky = document.querySelector('a-sky');
-                    sky.setAttribute('color', this.getRandomColor());
+                    const spell = document.querySelector('#spell');
+                    const enemy = document.querySelector('#enemy');
 
-                    // Implement other spell effects here
+                    // Calculate direction towards the enemy
+                    const directionVec = new THREE.Vector3();
+                    enemy.object3D.getWorldPosition(directionVec);
+                    directionVec.sub(this.el.object3D.getWorldPosition()).normalize();
+
+                    // Set the spell's position and direction
+                    spell.setAttribute('position', this.el.getAttribute('position'));
+                    spell.setAttribute('velocity', directionVec.multiplyScalar(5)); // Speed of the spell
+                    spell.play(); // Start the animation if paused
                 });
-            },
-            getRandomColor: function() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-                return color;
+            }
+        });
+
+        // Component for moving the spell
+        AFRAME.registerComponent('velocity', {
+            schema: {type: 'vec3'},
+            tick: function(time, timeDelta) {
+                var position = this.el.getAttribute('position');
+
+                position.x += this.data.x * timeDelta / 1000;
+                position.y += this.data.y * timeDelta / 1000;
+                position.z += this.data.z * timeDelta / 1000;
+
+                this.el.setAttribute('position', position);
             }
         });
     </script>
@@ -34,45 +47,16 @@
 <body>
     <a-scene>
         <a-sky color="#ECECEC"></a-sky>
-        
-        <a-entity id="spells" position="0 1.6 -4">
-            <!-- Updated Spell 1 with cast-spell component -->
-            <a-box position="-2 0 0" color="#4CC3D9" depth="0.5" height="0.5" width="0.5"
-                event-set__enter="_event: mouseenter; color: #F16745"
-                event-set__leave="_event: mouseleave; color: #4CC3D9"
-                cast-spell>
-                <!-- Updated animation to use property animation system of A-Frame -->
-                <a-animation attribute="rotation"
-                             dur="10000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
-            </a-box>
-            <!-- Repeat for other spells as necessary, attaching the cast-spell component -->
-            <!-- Spell 2 -->
-            <a-box position="0 0 0" color="#7BC8A4" depth="0.5" height="0.5" width="0.5"
-                event-set__enter="_event: mouseenter; color: #F16745"
-                event-set__leave="_event: mouseleave; color: #7BC8A4"
-                cast-spell>
-                <a-animation attribute="rotation"
-                             dur="8000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
-            </a-box>
-            <!-- Spell 3 -->
-            <a-box position="2 0 0" color="#FFC65D" depth="0.5" height="0.5" width="0.5"
-                event-set__enter="_event: mouseenter; color: #F16745"
-                event-set__leave="_event: mouseleave; color: #FFC65D"
-                cast-spell>
-                <a-animation attribute="rotation"
-                             dur="6000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
-            </a-box>
-        </a-entity>
-        
+
+        <!-- Wizard Object -->
+        <a-cylinder id="wizard" position="-1 0.5 -3" radius="0.5" height="1" color="blue"></a-cylinder>
+
+        <!-- Enemy Object -->
+        <a-box id="enemy" position="3 0.5 -3" depth="0.5" height="0.5" width="0.5" color="red"></a-box>
+
+        <!-- Spell Projectile -->
+        <a-sphere id="spell" position="-1 0.5 -3" radius="0.1" color="yellow" velocity=""></a-sphere>
+
         <a-camera>
             <a-cursor color="#4CC3D9"></a-cursor>
         </a-camera>
