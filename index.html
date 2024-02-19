@@ -16,7 +16,6 @@
                     // Example spell effect: Change background color
                     const sky = document.querySelector('a-sky');
                     sky.setAttribute('color', this.getRandomColor());
-
                     // Implement other spell effects here
                 });
             },
@@ -35,41 +34,27 @@
     <a-scene>
         <a-sky color="#ECECEC"></a-sky>
         
+        <!-- Wizard Object -->
+        <a-cylinder id="wizard" position="-1 3 -3" radius="0.5" height="1.5" color="#123456"></a-cylinder>
+        
+        <!-- Enemy Object -->
+        <a-sphere id="enemy" position="1 3 -3" radius="1.25" color="#FF0000"></a-sphere>
+        
         <a-entity id="spells" position="0 1.6 -4">
-            <!-- Updated Spell 1 with cast-spell component -->
             <a-box position="-2 0 0" color="#4CC3D9" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #4CC3D9"
                 cast-spell>
-                <!-- Updated animation to use property animation system of A-Frame -->
-                <a-animation attribute="rotation"
-                             dur="10000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
             </a-box>
-            <!-- Repeat for other spells as necessary, attaching the cast-spell component -->
-            <!-- Spell 2 -->
             <a-box position="0 0 0" color="#7BC8A4" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #7BC8A4"
                 cast-spell>
-                <a-animation attribute="rotation"
-                             dur="8000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
             </a-box>
-            <!-- Spell 3 -->
             <a-box position="2 0 0" color="#FFC65D" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #FFC65D"
                 cast-spell>
-                <a-animation attribute="rotation"
-                             dur="6000"
-                             fill="forwards"
-                             to="0 360 0"
-                             repeat="indefinite"></a-animation>
             </a-box>
         </a-entity>
         
