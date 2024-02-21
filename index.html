@@ -16,7 +16,7 @@
                 const sky = document.querySelector('a-sky');
                 sky.setAttribute('color', this.getRandomColor());
 
-                // Additionally, create a magic projectile
+                // Create a magic projectile using a 3D model
                 this.createMagicProjectile();
             });
         },
@@ -30,12 +30,12 @@
         },
         createMagicProjectile: function() {
             const sceneEl = document.querySelector('a-scene');
-            const projectile = document.createElement('a-sphere');
+            const projectile = document.createElement('a-entity');
 
-            // Adjust this position to match your wizard model's position or hand position
+            // Use the provided 3D model for the projectile
+            projectile.setAttribute('gltf-model', "https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878");
             projectile.setAttribute('position', {x: -1, y: 2, z: -3});
-            projectile.setAttribute('radius', 0.2);
-            projectile.setAttribute('color', '#00FF00'); // Magic color
+            projectile.setAttribute('scale', {x: 0.5, y: 0.5, z: 0.5}); // Adjust scale as needed
 
             // Setup animation to move the projectile from the wizard to the enemy
             projectile.setAttribute('animation', `property: position; to: 3 3 -3; dur: 1000; easing: linear;`);
@@ -43,7 +43,7 @@
             sceneEl.appendChild(projectile);
 
             // Remove the projectile after the animation completes
-            setTimeout(() => {s
+            setTimeout(() => {
                 sceneEl.removeChild(projectile);
             }, 1000);
         }
