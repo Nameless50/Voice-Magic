@@ -33,8 +33,9 @@
             const projectile = document.createElement('a-gltf-model');
 
             projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
-            projectile.setAttribute('position', '-3 -2 -3'); // Adjust to match the wizard's position
-            projectile.setAttribute('scale', '0.001 0.010 0.01'); // Adjust scale as needed
+            projectile.setAttribute('position', '-1 -2 -4'); // Adjust to match the wizard's position
+            projectile.setAttribute('scale', '0.01 0.01 0.01'); // Adjust scale as needed
+            projectile.setAttribute('rotation', '0 250 0');
 
             // Animate the projectile towards the enemy
             projectile.setAttribute('animation', 'property: position; to: 3 3 -3; dur: 1000; easing: linear;');
