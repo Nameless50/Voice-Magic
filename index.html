@@ -30,25 +30,28 @@
             }
             return color;
         },
-        createMagicProjectile: function() {
-            const sceneEl = document.querySelector('a-scene');
-            const projectile = document.createElement('a-gltf-model');
+createMagicProjectile: function() {
+    const sceneEl = document.querySelector('a-scene');
+    const projectile = document.createElement('a-gltf-model');
 
-            projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
-            projectile.setAttribute('position', '-1 -2 -4'); // Adjust to match the wizard's position
-            projectile.setAttribute('scale', '0.01 0.01 0.01'); // Adjust scale as needed
-            projectile.setAttribute('rotation', '0 250 0');
+    // Assuming the wizard's position is "-2 1 -4"
+    // Adjust the projectile's initial position to be slightly in front of the wizard
+    projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
+    projectile.setAttribute('position', '-2 1.5 -3.5'); // Slightly in front of the wizard
+    projectile.setAttribute('scale', '0.005 0.005 0.005'); // Adjust scale as needed
+    projectile.setAttribute('rotation', '0 0 0'); // Adjust rotation to match the direction
 
-            // Animate the projectile towards the enemy
-            projectile.setAttribute('animation', 'property: position; to: 3 0 -1; dur: 1000; easing: linear;');
+    // Ensure the projectile animation directs it towards the enemy's position
+    // Assuming the enemy's position is "3 3 -4.5"
+    projectile.setAttribute('animation', 'property: position; to: 3 3 -4.5; dur: 1000; easing: linear;');
 
-            sceneEl.appendChild(projectile);
+    sceneEl.appendChild(projectile);
 
-            // Remove the projectile after the animation completes to clean up
-            setTimeout(() => {
-                sceneEl.removeChild(projectile);
-            }, 1000);
-        }
+    // Clean up after the animation to prevent clutter
+    setTimeout(() => {
+        sceneEl.removeChild(projectile);
+    }, 1000); // Ensure this matches the duration of the animation
+}
     });
 </script>
 </head>
@@ -57,23 +60,23 @@
         <a-sky color="#ECECEC"></a-sky>
         
         <!-- Wizard Object -->
-        <a-gltf-model id="wizard" src="https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene4.gltf?v=1708491695820" position="-3 1 -4" rotation="0 0 0" scale="0.01 0.01 0.01" animation-mixer></a-gltf-model>
+        <a-gltf-model id="wizard" src="https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene4.gltf?v=1708491695820" position="-2 1 -4" rotation="0 0 0" scale="0.01 0.01 0.01" animation-mixer></a-gltf-model>
         
         <!-- Enemy Object -->
-        <a-gltf-model id="enemy" src="https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261" position="3 3 -4" rotation="0 0 0" scale="0.01 0.01 0.01" animation-mixer></a-gltf-model>
+        <a-gltf-model id="enemy" src="https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261" position="3 3 -4.5" rotation="0 0 0" scale="0.01 0.01 0.01" animation-mixer></a-gltf-model>
         
         <a-entity id="spells" position="0 1.6 -4">
-            <a-box position="-2 0 0" color="#4CC3D9" depth="0.5" height="0.5" width="0.5"
+            <a-box position="-2 2 0" color="#4CC3D9" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #4CC3D9"
                 cast-spell>
             </a-box>
-            <a-box position="0 0 0" color="#7BC8A4" depth="0.5" height="0.5" width="0.5"
+            <a-box position="0 2 0" color="#7BC8A4" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #7BC8A4"
                 cast-spell>
             </a-box>
-            <a-box position="2 0 0" color="#FFC65D" depth="0.5" height="0.5" width="0.5"
+            <a-box position="2 2s 0" color="#FFC65D" depth="0.5" height="0.5" width="0.5"
                 event-set__enter="_event: mouseenter; color: #F16745"
                 event-set__leave="_event: mouseleave; color: #FFC65D"
                 cast-spell>
