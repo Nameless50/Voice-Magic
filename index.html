@@ -36,14 +36,14 @@ createMagicProjectile: function() {
 
     // Assuming the wizard's position is "-2 1 -4"
     // Adjust the projectile's initial position to be slightly in front of the wizard
-    projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
-    projectile.setAttribute('position', '-2 1.5 -3.5'); // Slightly in front of the wizard
+    projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878'); 
+    projectile.setAttribute('position', '-2 0.5 -3.5'); // Slightly in front of the wizard
     projectile.setAttribute('scale', '0.005 0.005 0.005'); // Adjust scale as needed
-    projectile.setAttribute('rotation', '0 0 0'); // Adjust rotation to match the direction
+    projectile.setAttribute('rotation', '0 250 0'); // Adjust rotation to match the direction
 
     // Ensure the projectile animation directs it towards the enemy's position
     // Assuming the enemy's position is "3 3 -4.5"
-    projectile.setAttribute('animation', 'property: position; to: 3 3 -4.5; dur: 1000; easing: linear;');
+    projectile.setAttribute('animation', 'property: position; to: 3 1 -4.5; dur: 1000; easing: linear;');
 
     sceneEl.appendChild(projectile);
 
