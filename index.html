@@ -11,51 +11,95 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.0/dist/aframe-extras.min.js"></script>
 
 <script>
-  window.addEventListener('load', () => {
-    // Check for SpeechRecognition support
+window.addEventListener('load', () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
-        console.log("Your browser supports speech recognition.");
+        console.log("Speech recognition supported.");
         const recognition = new SpeechRecognition();
-        recognition.continuous = true; // Keep listening even after getting a result
+        recognition.continuous = true;
         recognition.lang = 'en-US';
-        recognition.interimResults = false; // We only want final results
+        recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        recognition.start(); // Start listening
+        recognition.start();
 
         recognition.onresult = (event) => {
             const lastResult = event.results[event.results.length - 1];
             if (lastResult.isFinal) {
                 const command = lastResult[0].transcript.trim().toLowerCase();
-                console.log("Heard command: ", command);
-
-                // Check the command
-                if (command.includes("background")) {
-                    // Trigger the background change
-                    const sky = document.querySelector('a-sky');
-                    const letters = '0123456789ABCDEF';
-                    let color = '#';
-                    for (let i = 0; i < 6; i++) {
-                        color += letters[Math.floor(Math.random() * 16)];
-                    }
-                    sky.setAttribute('color', color);
-                }
+                console.log("Command heard:", command);
+                executeSpell(command);
             }
         };
 
         recognition.onerror = (event) => {
-            console.error("Speech recognition error", event);
+            console.error("Speech recognition error:", event.error);
         };
 
         recognition.onend = () => {
-            console.log("Speech recognition ended, restarting...");
-            recognition.start(); // Restart to keep service running
+            recognition.start(); // Restart recognition
         };
     } else {
-        console.log("Your browser does not support speech recognition.");
+        console.log("Speech recognition not supported in this browser.");
     }
 });
+
+function executeSpell(command) {
+    const enemy = document.querySelector('#enemy');
+    switch (command) {
+        case "background":
+            changeBackground();
+            break;
+        case "dog spell":
+            transformToDog();
+            break;
+        case "cat spell":
+            transformToCat();
+            break;
+        case "reverse spell":
+            transformBack();
+            break;
+        default:
+            console.log("Command not recognized.");
+            break;
+    }
+}
+
+function changeBackground() {
+    const sky = document.querySelector('a-sky');
+    const color = getRandomColor();
+    sky.setAttribute('color', color);
+}
+
+function transformToDog() {
+    if (enemy) {
+        enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene5.gltf?v=1708493195785');
+        enemy.setAttribute('scale', '1 1 1');
+    }
+}
+
+function transformToCat() {
+    if (enemy) {
+        enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene6.gltf?v=1708541908551');
+        enemy.setAttribute('scale', '0.005 0.005 0.005');
+    }
+}
+
+function transformBack() {
+    if (enemy) {
+        enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261');
+        enemy.setAttribute('scale', '0.008 0.008 0.008');
+    }
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
   
 AFRAME.registerComponent('change-background', {
     init: function() {
