@@ -75,7 +75,7 @@ function executeSpell(command) {
     }
 }
 
-  
+
 function launchProjectile(callback) {
     const sceneEl = document.querySelector('a-scene');
     const projectile = document.createElement('a-gltf-model');
@@ -154,105 +154,6 @@ function getRandomColor() {
     return color;
 }
   
-AFRAME.registerComponent('change-background', {
-    init: function() {
-        this.el.addEventListener('click', () => {
-            const sky = document.querySelector('a-sky');
-            sky.setAttribute('color', this.getRandomColor());
-        });
-    },
-    getRandomColor: function() {
-        let color = '#';
-        const letters = '0123456789ABCDEF';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-});
-
-AFRAME.registerComponent('shoot-spell', {
-    init: function() {
-        this.el.addEventListener('click', () => {
-            const sceneEl = document.querySelector('a-scene');
-            const enemy = document.querySelector('#enemy'); // Get the enemy object
-            const projectile = document.createElement('a-gltf-model');
-
-            projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
-            projectile.setAttribute('position', '-2 0.5 -3.5'); // Adjust to match the wizard's position
-            projectile.setAttribute('scale', '0.005 0.005 0.005'); // Make the shot smaller
-            projectile.setAttribute('rotation', '0 250 0');
-
-            // Animate the projectile towards the enemy's position
-            projectile.setAttribute('animation', 'property: position; to: 3 1 -4.5; dur: 1000; easing: linear;');
-
-            sceneEl.appendChild(projectile);
-
-            // Simulate the hit and transform the enemy into a dog after the projectile animation completes
-            setTimeout(() => {
-                sceneEl.removeChild(projectile); // Remove the projectile
-
-                // Perform the transformation
-                if (enemy) { // Check if the enemy exists to transform
-                    enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene5.gltf?v=1708493195785'); // Transform the enemy into a dog
-                    enemy.setAttribute('scale', '1 1 1'); // Adjust scale for the dog model, if necessary
-                    enemy.setAttribute('position', '3 1 -4.5');
-                }
-            }, 1000); // This matches the duration of the projectile's animation
-        });
-    }
-});
-  
-  AFRAME.registerComponent('transform-to-cat', {
-    init: function() {
-        this.el.addEventListener('click', () => {
-            const sceneEl = document.querySelector('a-scene');
-            const enemy = document.querySelector('#enemy'); // Get the enemy object
-            const projectile = document.createElement('a-gltf-model');
-
-            projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
-            projectile.setAttribute('position', '-2 0.5 -3.5'); // Adjust to match the wizard's position
-            projectile.setAttribute('scale', '0.005 0.005 0.005'); // Make the shot smaller
-            projectile.setAttribute('rotation', '0 250 0');
-
-            // Animate the projectile towards the enemy's position
-            projectile.setAttribute('animation', 'property: position; to: 3 1 -4.5; dur: 1000; easing: linear;');
-
-            sceneEl.appendChild(projectile);
-
-            // Transform the enemy or dog into a cat after the projectile animation completes
-            setTimeout(() => {
-                sceneEl.removeChild(projectile); // Remove the projectile
-
-                // Check if the enemy exists to transform
-                if (enemy) {
-                    enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene6.gltf?v=1708541908551'); // Transform into a cat
-                    enemy.setAttribute('scale', '0.005 0.005 0.005'); // Adjust scale for the cat model, if necessary
-                    enemy.setAttribute('position', '3 1 -4.5');
-                }
-            }, 1000); // This matches the duration of the projectile's animation
-        });
-    }
-});
-
-  
-AFRAME.registerComponent('transform-back', {
-    init: function() {
-        this.el.addEventListener('click', () => {
-            const enemy = document.querySelector('#enemy');
-            // Check the current model of the enemy
-            const currentModel = enemy.getAttribute('gltf-model');
-            
-            // Transform back to the enemy if it's either a dog or a cat
-            if (currentModel === 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene5.gltf?v=1708493195785' || 
-                currentModel === 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene6.gltf?v=1708541908551') {
-                enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261');
-                enemy.setAttribute('scale', '0.008 0.008 0.008'); // Adjust scale back to the original enemy model
-                enemy.setAttribute('position', '3 2.8 -4.5'); // Reset position if necessary
-            }
-        });
-    }
-});
 
 
 </script>
@@ -271,29 +172,7 @@ AFRAME.registerComponent('transform-back', {
         <!-- Enemy Object -->
         <a-gltf-model id="enemy" src="https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261" position="3 2.8 -4.5" rotation="0 0 0" scale="0.008 0.008 0.008" animation-mixer></a-gltf-model>
         
-<a-entity id="spells" position="0 1.6 -4">
-    <a-box position="-2 2 0" color="#4CC3D9" depth="0.5" height="0.5" width="0.5"
-        event-set__enter="_event: mouseenter; color: #F16745"
-        event-set__leave="_event: mouseleave; color: #4CC3D9"
-        change-background> <!-- Change background component -->
-    </a-box>
-    <a-box position="0 2 0" color="#7BC8A4" depth="0.5" height="0.5" width="0.5"
-        event-set__enter="_event: mouseenter; color: #F16745"
-        event-set__leave="_event: mouseleave; color: #7BC8A4"
-        shoot-spell> <!-- Shoot spell component -->
-    </a-box>
-<a-box position="2 2 0" color="#FFC65D" depth="0.5" height="0.5" width="0.5"
-    event-set__enter="_event: mouseenter; color: #F16745"
-    event-set__leave="_event: mouseleave; color: #FFC65D"
-    transform-back> <!-- New transform-back component for reverting the dog to the enemy -->
-</a-box>
-  <a-box position="2 2 -2" color="#FF69B4" depth="0.5" height="0.5" width="0.5"
-    event-set__enter="_event: mouseenter; color: #F16745"
-    event-set__leave="_event: mouseleave; color: #FF69B4"
-    transform-to-cat> <!-- New component for transforming into a cat -->
-</a-box>
 
-</a-entity>
         
         <a-camera>
             <a-cursor color="#4CC3D9"></a-cursor>
