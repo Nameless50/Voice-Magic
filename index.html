@@ -11,6 +11,49 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.0/dist/aframe-extras.min.js"></script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if the browser supports speech recognition
+    if ('webkitSpeechRecognition' in window) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = true; // Keep listening even after getting a result
+        recognition.interimResults = true; // Show interim results
+
+        recognition.onresult = function(event) {
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    var transcript = event.results[i][0].transcript.trim().toLowerCase();
+                    if (transcript === 'background') { // Change 'background' to trigger the color change
+                        changeBackground();
+                    }
+                }
+            }
+        };
+
+        recognition.onerror = function(event) {
+            console.log('Speech recognition error:', event.error);
+        };
+
+        recognition.start();
+    } else {
+        alert('Your browser does not support speech recognition. Please try this feature in Google Chrome.');
+    }
+});
+
+function changeBackground() {
+    const sky = document.querySelector('a-sky');
+    const color = getRandomColor();
+    sky.setAttribute('color', color);
+}
+
+function getRandomColor() {
+    let color = '#';
+    const letters = '0123456789ABCDEF';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 AFRAME.registerComponent('change-background', {
     init: function() {
         this.el.addEventListener('click', () => {
