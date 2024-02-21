@@ -8,28 +8,47 @@
     <link rel="stylesheet" href="/style.css">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
-    <script>
-        // A-Frame Custom Component for Spell Casting
-        AFRAME.registerComponent('cast-spell', {
-            init: function() {
-                this.el.addEventListener('click', () => {
-                    // Example spell effect: Change background color
-                    const sky = document.querySelector('a-sky');
-                    sky.setAttribute('color', this.getRandomColor());
-                    // Implement other spell effects here
-                });
-            },
-            getRandomColor: function() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-              
-                return color;
+<script>
+    AFRAME.registerComponent('cast-spell', {
+        init: function() {
+            this.el.addEventListener('click', () => {
+                // Change background color as a simple spell effect
+                const sky = document.querySelector('a-sky');
+                sky.setAttribute('color', this.getRandomColor());
+
+                // Additionally, create a magic projectile
+                this.createMagicProjectile();
+            });
+        },
+        getRandomColor: function() {
+            let color = '#';
+            const letters = '0123456789ABCDEF';
+            for (let i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
             }
-        });
-    </script>
+            return color;
+        },
+        createMagicProjectile: function() {
+            const sceneEl = document.querySelector('a-scene');
+            const projectile = document.createElement('a-sphere');
+
+            // Adjust this position to match your wizard model's position or hand position
+            projectile.setAttribute('position', {x: -1, y: 2, z: -3});
+            projectile.setAttribute('radius', 0.2);
+            projectile.setAttribute('color', '#00FF00'); // Magic color
+
+            // Setup animation to move the projectile from the wizard to the enemy
+            projectile.setAttribute('animation', `property: position; to: 3 3 -3; dur: 1000; easing: linear;`);
+
+            sceneEl.appendChild(projectile);
+
+            // Remove the projectile after the animation completes
+            setTimeout(() => {s
+                sceneEl.removeChild(projectile);
+            }, 1000);
+        }
+    });
+</script>
 </head>
 <body>
     <a-scene>
