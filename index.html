@@ -45,24 +45,43 @@ window.addEventListener('load', () => {
 });
 
 function executeSpell(command) {
-    const enemy = document.querySelector('#enemy');
     switch (command) {
         case "background":
             changeBackground();
             break;
         case "dog spell":
-            transformToDog();
+            launchProjectile(transformToDog);
             break;
         case "cat spell":
-            transformToCat();
+            launchProjectile(transformToCat);
             break;
         case "reverse spell":
-            transformBack();
+            launchProjectile(transformBack);
             break;
         default:
             console.log("Command not recognized.");
             break;
     }
+}
+function launchProjectile(callback) {
+    const sceneEl = document.querySelector('a-scene');
+    const projectile = document.createElement('a-gltf-model');
+
+    projectile.setAttribute('src', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene2.gltf?v=1708488354878');
+    projectile.setAttribute('position', '-2 0.5 -3.5'); // Adjust to match the wizard's position
+    projectile.setAttribute('scale', '0.005 0.005 0.005'); // Adjust the size of the projectile
+    projectile.setAttribute('rotation', '0 250 0');
+
+    // Set the animation to move the projectile towards the enemy's position
+    projectile.setAttribute('animation', 'property: position; to: 3 1 -4.5; dur: 1000; easing: linear;');
+
+    sceneEl.appendChild(projectile);
+
+    // Wait for the animation to complete before executing the transformation
+    setTimeout(() => {
+        sceneEl.removeChild(projectile); // Remove the projectile
+        callback(); // Execute the transformation callback
+    }, 1000); // This matches the duration of the projectile's animation
 }
 
 function changeBackground() {
@@ -82,6 +101,8 @@ function transformToCat() {
     if (enemy) {
         enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene6.gltf?v=1708541908551');
         enemy.setAttribute('scale', '0.005 0.005 0.005');
+        enemy.setAttribute('position', '3 1.5 -4.5');
+
     }
 }
 
