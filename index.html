@@ -58,11 +58,23 @@ function executeSpell(command) {
         case "reverse spell":
             launchProjectile(transformBack);
             break;
+        case "shrink spell":
+            adjustWizardSize(0.005); // Half the original size
+            break;
+        case "grow spell":
+            adjustWizardSize(0.05); // Double the original size
+            break;
+        case "normal size spell":
+            resetWizardSize(); // Reset to original size
+            break;
+
+
         default:
             console.log("Command not recognized.");
             break;
     }
 }
+
   
 function launchProjectile(callback) {
     const sceneEl = document.querySelector('a-scene');
@@ -115,6 +127,23 @@ function transformBack() {
         enemy.setAttribute('position', '3 2.8 -4.5');
     }
 }
+  
+function adjustWizardSize(scaleFactor) {
+    const wizard = document.querySelector('#wizard');
+    if (wizard) {
+        wizard.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+    }
+}
+  
+function resetWizardSize() {
+    const wizard = document.querySelector('#wizard');
+    if (wizard) {
+        // Reset the wizard's size to the original scale
+        wizard.setAttribute('scale', "0.01 0.01 0.01");
+    }
+}
+
+
 
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
