@@ -59,9 +59,11 @@ function executeSpell(command) {
             break;
         case "shrink spell":
             adjustWizardSize(0.005); // Half the original size
+            showMessage("The shrink spell was cast perfectly");
             break;
         case "grow spell":
             adjustWizardSize(0.05); // Double the original size
+            showMessage("The Grow spell was cast perfectly");
             break;
         case "normal size spell":
             resetWizardSize(); // Reset to original size
@@ -97,33 +99,44 @@ function launchProjectile(callback) {
 }
 
 function changeBackground() {
+    const enemy = document.querySelector('#enemy');
     const sky = document.querySelector('a-sky');
     const color = getRandomColor();
     sky.setAttribute('color', color);
+    showMessage("The Background spell was cast perfectly");
+
 }
 
 function transformToDog() {
+    const enemy = document.querySelector('#enemy');
     if (enemy) {
         enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene5.gltf?v=1708493195785');
         enemy.setAttribute('scale', '1 1 1');
         enemy.setAttribute('position', '3 1.2 -4.5');
+        showMessage("The Dog spell was cast perfectly");
+
     }
 }
 
 function transformToCat() {
+    const enemy = document.querySelector('#enemy');
     if (enemy) {
         enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene6.gltf?v=1708541908551');
         enemy.setAttribute('scale', '0.005 0.005 0.005');
         enemy.setAttribute('position', '3 1.5 -4.5');
+        showMessage("The Cat spell was cast perfectly");
 
     }
 }
 
 function transformBack() {
+    const enemy = document.querySelector('#enemy');
     if (enemy) {
         enemy.setAttribute('gltf-model', 'https://cdn.glitch.global/15d883af-d2cb-46d5-ae7f-907d434c5fdf/scene3.gltf?v=1708490649261');
         enemy.setAttribute('scale', '0.008 0.008 0.008');
         enemy.setAttribute('position', '3 2.8 -4.5');
+        showMessage("The Reverse spell was cast perfectly");
+
     }
 }
   
@@ -131,6 +144,7 @@ function adjustWizardSize(scaleFactor) {
     const wizard = document.querySelector('#wizard');
     if (wizard) {
         wizard.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+      
     }
 }
   
@@ -141,6 +155,25 @@ function resetWizardSize() {
         wizard.setAttribute('scale', "0.01 0.01 0.01");
     }
 }
+  
+function showMessage(message) {
+    const sceneEl = document.querySelector('a-scene');
+    const textEl = document.createElement('a-text');
+
+    textEl.setAttribute('value', message);
+    textEl.setAttribute('position', '0 2.5 -4'); // Adjust position as needed
+    textEl.setAttribute('color', '#FFFFFF');
+    textEl.setAttribute('align', 'center');
+    textEl.setAttribute('width', '6'); // Adjust width as needed for message length
+
+    sceneEl.appendChild(textEl);
+
+    // Remove the message after 3 seconds
+    setTimeout(() => {
+        sceneEl.removeChild(textEl);
+    }, 3000);
+}
+
 
 
 
