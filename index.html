@@ -16,24 +16,43 @@ window.addEventListener('load', () => {
         console.log("Speech recognition supported.");
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.lang = 'en-US'; // Consider adding a feature for the user to select their language or accent
+        recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        // Enhance recognition start with a custom function to handle noise
-        function startRecognition() {
-            recognition.start();
-            console.log("Recognition started with enhanced settings.");
-        }
+        let awaitingConfirmation = false; // To check if we're awaiting confirmation
+        let lastCommand = ''; // Store the last command for confirmation
 
-        startRecognition();
+        recognition.start();
 
         recognition.onresult = (event) => {
             const lastResult = event.results[event.results.length - 1];
             if (lastResult.isFinal) {
                 const command = lastResult[0].transcript.trim().toLowerCase();
-                console.log("Command heard:", command);
-                executeSpell(command);
+
+                if (!awaitingConfirmation) {
+                    console.log("Command heard:", command);
+                    // Check if the command is a sensitivity setting command
+                    if (command.startsWith("set sensitivity")) {
+                        adjustSensitivity(command);
+                        return;
+                    }
+                    awaitingConfirmation = true;
+                    lastCommand = command;
+                    console.log(`Did you say "${command}"? Say 'Yes' to confirm or 'No' to cancel.`);
+                } else {
+                    if (command === 'yes') {
+                        console.log("Confirmation received. Executing command:", lastCommand);
+                        executeSpell(lastCommand);
+                    } else if (command === 'no') {
+                        console.log("Command cancelled.");
+                    } else {
+                        console.log("Please say 'Yes' to confirm or 'No' to cancel.");
+                        return; // Keep awaiting confirmation for a valid response
+                    }
+                    awaitingConfirmation = false;
+                    lastCommand = '';
+                }
             }
         };
 
@@ -42,13 +61,15 @@ window.addEventListener('load', () => {
         };
 
         recognition.onend = () => {
-            // Potentially adjust settings based on error rates or feedback
-            startRecognition(); // Restart recognition with possibly updated settings
+            if (!awaitingConfirmation) {
+                recognition.start(); // Restart recognition if not awaiting confirmation
+            }
         };
     } else {
         console.log("Speech recognition not supported in this browser.");
     }
 });
+
 
 function executeSpell(command) {
     switch (command) {
@@ -84,7 +105,33 @@ function executeSpell(command) {
     }
 }
 
+// Add a function for speaking messages
+function speakMessage(message) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'en-US';
+    synth.speak(utterance);
+}
 
+function adjustSensitivity(command) {
+    // Extract sensitivity value from the command
+    const sensitivityValue = command.split(" ")[2]; // Assuming command format is "set sensitivity [value]"
+    if (sensitivityValue) {
+        try {
+            const sensitivity = parseFloat(sensitivityValue);
+            if (sensitivity >= 0 && sensitivity <= 1) {
+                // Assuming there's a function to adjust sensitivity, you'd call it here
+                console.log(`Sensitivity adjusted to ${sensitivity}`);
+                // recognition.sensitivity = sensitivity; // This is a placeholder, as the actual Web Speech API does not support this property
+            } else {
+                console.log("Sensitivity value out of range. Please choose a value between 0 and 1.");
+            }
+        } catch (error) {
+            console.log("Invalid sensitivity value. Please use a number between 0 and 1.");
+        }
+    }
+}
+  
 function launchProjectile(callback) {
     const sceneEl = document.querySelector('a-scene');
     const projectile = document.createElement('a-gltf-model');
