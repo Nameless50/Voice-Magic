@@ -14,97 +14,55 @@ window.addEventListener('load', () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
         console.log("Speech recognition supported.");
-        let recognition = new SpeechRecognition();
-        recognition.continuous = false; // Changed to false to better control restarts
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
         recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        let awaitingConfirmation = false; // Check if awaiting confirmation
-        let lastCommand = ''; // Store the last command for confirmation
+        let awaitingConfirmation = false; // Track whether we're awaiting a confirmation
+        let pendingCommand = ""; // Store the pending command to execute after confirmation
 
-        const startRecognition = () => {
-            recognition = new SpeechRecognition();
-            recognition.continuous = false; // Restart recognition after each command
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            recognition.onresult = onResult; // Re-assign the event handler
-            recognition.start();
-        };
+        recognition.start();
 
-const onResult = (event) => {
-    const lastResult = event.results[event.results.length - 1];
-    if (lastResult.isFinal) {
-        const command = lastResult[0].transcript.trim().toLowerCase();
-
-        if (awaitingConfirmation) {
-            if (command === 'yes') {
-                console.log("Confirmation received. Executing command:", lastCommand);
-                executeSpell(lastCommand);
-                removeMessage(); // Remove the confirmation message
-            } else if (command === 'no') {
-                console.log("Command cancelled.");
-                removeMessage(); // Remove the confirmation message
-            } else {
-                console.log("Please say 'Yes' to confirm or 'No' to cancel.");
-                // Do not remove the message; wait for a valid response
-                return;
+        recognition.onresult = (event) => {
+            const lastResult = event.results[event.results.length - 1];
+            if (lastResult.isFinal) {
+                const command = lastResult[0].transcript.trim().toLowerCase();
+                console.log("Command heard:", command);
+                // Directly handle "yes" and "no" when in confirmation mode to prevent re-triggering
+                if (awaitingConfirmation) {
+                    if (command === "yes") {
+                        awaitingConfirmation = false;
+                        showMessage(`Casting ${pendingCommand}...`);
+                        executeSpell(pendingCommand); // Execute the pending command
+                        recognition.start(); // Restart recognition after confirmation
+                    } else if (command === "no") {
+                        awaitingConfirmation = false;
+                        showMessage("Spell casting cancelled.");
+                        recognition.start(); // Restart recognition after cancellation
+                    }
+                    // Do not listen for other commands until the user confirms or cancels
+                } else {
+                    // For new commands, ask for confirmation
+                    pendingCommand = command; // Set the pending command
+                    awaitingConfirmation = true; // Set awaiting confirmation
+                    showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`);
+                }
             }
-            awaitingConfirmation = false;
-            lastCommand = '';
-        } else {
-            lastCommand = command;
-            awaitingConfirmation = true;
-            showMessage(`Did you say "${command}"? Say 'Yes' to confirm or 'No' to cancel.`, true); // Keep the message until explicitly removed
-            recognition.stop(); // Stop recognition to wait for "Yes" or "No"
-        }
-    }
-};
-
-        recognition.onresult = onResult;
+        };
 
         recognition.onerror = (event) => {
             console.error("Speech recognition error:", event.error);
         };
 
         recognition.onend = () => {
-            if (!awaitingConfirmation) {
-                startRecognition(); // Restart recognition if not awaiting confirmation
-            }
+            // Avoid restarting recognition if awaiting confirmation to prevent interruption
         };
-
-        recognition.start();
     } else {
         console.log("Speech recognition not supported in this browser.");
     }
-});// Add a function for speaking messages
-function speakMessage(message) {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.lang = 'en-US';
-    synth.speak(utterance);
-}
-
-function adjustSensitivity(command) {
-    // Extract sensitivity value from the command
-    const sensitivityValue = command.split(" ")[2]; // Assuming command format is "set sensitivity [value]"
-    if (sensitivityValue) {
-        try {
-            const sensitivity = parseFloat(sensitivityValue);
-            if (sensitivity >= 0 && sensitivity <= 1) {
-                // Assuming there's a function to adjust sensitivity, you'd call it here
-                console.log(`Sensitivity adjusted to ${sensitivity}`);
-                // recognition.sensitivity = sensitivity; // This is a placeholder, as the actual Web Speech API does not support this property
-            } else {
-                console.log("Sensitivity value out of range. Please choose a value between 0 and 1.");
-            }
-        } catch (error) {
-            console.log("Invalid sensitivity value. Please use a number between 0 and 1.");
-        }
-    }
-}
-
+});
 function executeSpell(command) {
     switch (command) {
         case "background":
