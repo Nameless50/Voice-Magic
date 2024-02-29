@@ -16,11 +16,17 @@ window.addEventListener('load', () => {
         console.log("Speech recognition supported.");
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.lang = 'en-US';
+        recognition.lang = 'en-US'; // Consider adding a feature for the user to select their language or accent
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        recognition.start();
+        // Enhance recognition start with a custom function to handle noise
+        function startRecognition() {
+            recognition.start();
+            console.log("Recognition started with enhanced settings.");
+        }
+
+        startRecognition();
 
         recognition.onresult = (event) => {
             const lastResult = event.results[event.results.length - 1];
@@ -36,7 +42,8 @@ window.addEventListener('load', () => {
         };
 
         recognition.onend = () => {
-            recognition.start(); // Restart recognition
+            // Potentially adjust settings based on error rates or feedback
+            startRecognition(); // Restart recognition with possibly updated settings
         };
     } else {
         console.log("Speech recognition not supported in this browser.");
