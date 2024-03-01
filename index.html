@@ -20,9 +20,6 @@ window.addEventListener('load', () => {
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        let awaitingConfirmation = false; // Track whether we're awaiting a confirmation
-        let pendingCommand = ""; // Store the pending command to execute after confirmation
-
         recognition.start();
 
         recognition.onresult = (event) => {
@@ -30,25 +27,7 @@ window.addEventListener('load', () => {
             if (lastResult.isFinal) {
                 const command = lastResult[0].transcript.trim().toLowerCase();
                 console.log("Command heard:", command);
-                // Directly handle "yes" and "no" when in confirmation mode to prevent re-triggering
-                if (awaitingConfirmation) {
-                    if (command === "yes") {
-                        awaitingConfirmation = false;
-                        showMessage(`Casting ${pendingCommand}...`);
-                        executeSpell(pendingCommand); // Execute the pending command
-                        recognition.start(); // Restart recognition after confirmation
-                    } else if (command === "no") {
-                        awaitingConfirmation = false;
-                        showMessage("Spell casting cancelled.");
-                        recognition.start(); // Restart recognition after cancellation
-                    }
-                    // Do not listen for other commands until the user confirms or cancels
-                } else {
-                    // For new commands, ask for confirmation
-                    pendingCommand = command; // Set the pending command
-                    awaitingConfirmation = true; // Set awaiting confirmation
-                    showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`);
-                }
+                confirmSpell(command); // Change to confirmSpell
             }
         };
 
@@ -57,12 +36,23 @@ window.addEventListener('load', () => {
         };
 
         recognition.onend = () => {
-            // Avoid restarting recognition if awaiting confirmation to prevent interruption
+            recognition.start(); // Restart recognition
         };
     } else {
         console.log("Speech recognition not supported in this browser.");
     }
 });
+  
+  // New function to handle spell confirmation
+function confirmSpell(command) {
+    const validCommands = ["dog spell", "cat spell", "reverse spell", "shrink spell", "grow spell", "normal size spell"];
+    if (validCommands.includes(command)) {
+        showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`, () => executeSpell(command)); // showMessage modified to accept a callback
+    } else {
+        console.log("Command not recognized or requires no confirmation.");
+    }
+}
+
 function executeSpell(command) {
     switch (command) {
         case "background":
@@ -177,7 +167,7 @@ function resetWizardSize() {
     }
 }
   
-function showMessage(message) {
+function showMessage(message, duration = 3000) {
     const sceneEl = document.querySelector('a-scene');
     const messageEl = document.createElement('a-entity'); // Container for text and background
 
@@ -205,12 +195,11 @@ function showMessage(message) {
 
     sceneEl.appendChild(messageEl);
 
-    // Remove the message after 3 seconds
+    // Remove the message after specified duration
     setTimeout(() => {
         sceneEl.removeChild(messageEl);
-    }, 3000);
-}
-  
+    }, duration);
+}  
 
 
 
