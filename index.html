@@ -20,6 +20,9 @@ window.addEventListener('load', () => {
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
+        let awaitingConfirmation = false;
+        let pendingSpell = '';
+
         recognition.start();
 
         recognition.onresult = (event) => {
@@ -27,7 +30,27 @@ window.addEventListener('load', () => {
             if (lastResult.isFinal) {
                 const command = lastResult[0].transcript.trim().toLowerCase();
                 console.log("Command heard:", command);
-                confirmSpell(command); // Change to confirmSpell
+
+                if (!awaitingConfirmation) {
+                    // Check if the command requires confirmation
+                    if (command === "dog spell" || command === "cat spell" || command === "reverse spell" || command === "shrink spell" || command === "grow spell" || command === "normal size spell") {
+                        awaitingConfirmation = true;
+                        pendingSpell = command;
+                        showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`);
+                    } else {
+                        console.log("Command not recognized.");
+                    }
+                } else {
+                    if (command === "yes") {
+                        executeSpell(pendingSpell);
+                        awaitingConfirmation = false;
+                        pendingSpell = '';
+                    } else if (command === "no") {
+                        showMessage("Spell casting cancelled.");
+                        awaitingConfirmation = false;
+                        pendingSpell = '';
+                    }
+                }
             }
         };
 
@@ -42,16 +65,6 @@ window.addEventListener('load', () => {
         console.log("Speech recognition not supported in this browser.");
     }
 });
-  
-  // New function to handle spell confirmation
-function confirmSpell(command) {
-    const validCommands = ["dog spell", "cat spell", "reverse spell", "shrink spell", "grow spell", "normal size spell"];
-    if (validCommands.includes(command)) {
-        showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`, () => executeSpell(command)); // showMessage modified to accept a callback
-    } else {
-        console.log("Command not recognized or requires no confirmation.");
-    }
-}
 
 function executeSpell(command) {
     switch (command) {
@@ -73,7 +86,6 @@ function executeSpell(command) {
             break;
         case "grow spell":
             adjustWizardSize(0.05); // Double the original size
-            showMessage("The Grow spell was cast perfectly");
             break;
         case "normal size spell":
             resetWizardSize(); // Reset to original size
@@ -167,7 +179,7 @@ function resetWizardSize() {
     }
 }
   
-function showMessage(message, duration = 3000) {
+function showMessage(message) {
     const sceneEl = document.querySelector('a-scene');
     const messageEl = document.createElement('a-entity'); // Container for text and background
 
@@ -195,11 +207,12 @@ function showMessage(message, duration = 3000) {
 
     sceneEl.appendChild(messageEl);
 
-    // Remove the message after specified duration
+    // Remove the message after 3 seconds
     setTimeout(() => {
         sceneEl.removeChild(messageEl);
-    }, duration);
-}  
+    }, 3000);
+}
+  
 
 
 
