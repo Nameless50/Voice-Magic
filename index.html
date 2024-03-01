@@ -54,9 +54,10 @@ window.addEventListener('load', () => {
             }
         };
 
-        recognition.onerror = (event) => {
-            console.error("Speech recognition error:", event.error);
-        };
+recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+    handleRecognitionError(event.error);
+};
 
         recognition.onend = () => {
             recognition.start(); // Restart recognition
@@ -213,6 +214,24 @@ function showMessage(message) {
     }, 3000);
 }
   
+function handleRecognitionError(error) {
+    let message = "An error occurred with speech recognition: ";
+    switch (error) {
+        case 'no-speech':
+            message += "No speech was detected. Please try again.";
+            break;
+        case 'audio-capture':
+            message += "Microphone is not available or not working.";
+            break;
+        case 'not-allowed':
+            message += "Permission to use microphone is denied. Please allow microphone access.";
+            break;
+        default:
+            message += "Please try again later.";
+            break;
+    }
+    showMessage(message);
+}
 
 
 
