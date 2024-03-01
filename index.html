@@ -92,10 +92,9 @@ function executeSpell(command) {
             resetWizardSize(); // Reset to original size
             showMessage("The Wizard went back to its original size perfectly");
             break;
-
-
         default:
-            console.log("Command not recognized.");
+            // Update this part to provide feedback to the user
+            showMessage("Command not recognized. Please make sure you are using a valid spell name.");
             break;
     }
 }
