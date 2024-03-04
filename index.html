@@ -59,7 +59,7 @@ recognition.onerror = (event) => {
 };
 
         recognition.onend = () => {
-            recognition.start(); // Restart recognition
+            recognition.start(); 
         };
     } else {
         console.log("Speech recognition not supported in this browser.");
@@ -184,29 +184,29 @@ function showMessage(message) {
 
 
     const backgroundEl = document.createElement('a-plane');
-    backgroundEl.setAttribute('color', '#000'); // Background color
-    backgroundEl.setAttribute('height', '0.5'); // Height of the background
-    backgroundEl.setAttribute('width', '7'); // Width of the background, adjust based on text length
-    backgroundEl.setAttribute('opacity', '0.8'); // Adjust for desired transparency
-    backgroundEl.setAttribute('position', '0 0 -0.01'); // Slightly behind the text for 3D effect
+    backgroundEl.setAttribute('color', '#000'); 
+    backgroundEl.setAttribute('height', '0.5'); 
+    backgroundEl.setAttribute('width', '7'); 
+    backgroundEl.setAttribute('opacity', '0.8'); 
+    backgroundEl.setAttribute('position', '0 0 -0.01'); 
 
-    // Create text element
+ 
     const textEl = document.createElement('a-text');
     textEl.setAttribute('value', message);
     textEl.setAttribute('color', '#FFFFFF');
     textEl.setAttribute('align', 'center');
-    textEl.setAttribute('width', '6'); // Adjust based on the length of the message
+    textEl.setAttribute('width', '6'); 
 
-    // Add text and background to the container entity
+
     messageEl.appendChild(backgroundEl);
     messageEl.appendChild(textEl);
 
-    // Position the message container in the scene
-    messageEl.setAttribute('position', '0 2.5 -4'); // Adjust position as needed
+
+    messageEl.setAttribute('position', '0 2.5 -4'); 
 
     sceneEl.appendChild(messageEl);
 
-    // Remove the message after 3 seconds
+
     setTimeout(() => {
         sceneEl.removeChild(messageEl);
     }, 3000);
