@@ -24,34 +24,33 @@ window.addEventListener('load', () => {
 
         recognition.start();
 
-        recognition.onresult = (event) => {
-            const lastResult = event.results[event.results.length - 1];
-            if (lastResult.isFinal) {
-                const command = lastResult[0].transcript.trim().toLowerCase();
-                console.log("Command heard:", command);
+recognition.onresult = (event) => {
+    const lastResult = event.results[event.results.length - 1];
+    if (lastResult.isFinal) {
+        const command = lastResult[0].transcript.trim().toLowerCase();
+        console.log("Command heard:", command);
 
-                if (!awaitingConfirmation) {
-
-                    if (command === "dog spell" || command === "cat spell" || command === "reverse spell" || command === "shrink spell" || command === "grow spell" || command === "normal size spell") {
-                        awaitingConfirmation = true;
-                        pendingSpell = command;
-                        showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`);
-                    } else {
-                        console.log("Command not recognized.");
-                    }
-                } else {
-                    if (command === "yes") {
-                        executeSpell(pendingSpell);
-                        awaitingConfirmation = false;
-                        pendingSpell = '';
-                    } else if (command === "no") {
-                        showMessage("Spell casting cancelled.");
-                        awaitingConfirmation = false;
-                        pendingSpell = '';
-                    }
-                }
+        if (!awaitingConfirmation) {
+            if (["dog spell", "cat spell", "reverse spell", "shrink spell", "grow spell", "normal size spell"].includes(command)) {
+                awaitingConfirmation = true;
+                pendingSpell = command;
+                showMessage(`Did you say ${command}? Say 'Yes' to confirm or 'No' to cancel.`);
+            } else {
+                showMessage("Command not recognized. Please make sure you are using a valid spell name.");
             }
-        };
+        } else {
+            if (command === "yes") {
+                executeSpell(pendingSpell);
+                awaitingConfirmation = false;
+                pendingSpell = '';
+            } else if (command === "no") {
+                showMessage("Spell casting cancelled.");
+                awaitingConfirmation = false;
+                pendingSpell = '';
+            }
+        }
+    }
+};
 
 recognition.onerror = (event) => {
     console.error("Speech recognition error:", event.error);
